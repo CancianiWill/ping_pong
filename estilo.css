@@ -1,0 +1,9 @@
+* {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+h1 {
+    text-align: center;
+    background-color: #1D6142;
+}
