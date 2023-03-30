@@ -60,8 +60,14 @@ const raqueteDireita = {
 };
 
 const placar = {
-    human: 1,
-    computer: 2,
+    human: 0,
+    computer: 0,
+    _pontuarHuman: function(){
+        this.human++
+    },
+    _pontuarComputer: function(){
+        this.computer++
+    },
     draw: function(){
         // desenhando placar 
         canvasCtx.font = 'bold 72px Arial' 
@@ -79,14 +85,55 @@ const placar = {
 };
 
 const bola = {
-    x: 300,
-    y: 200,
+    x: 0,
+    y: 0,
     r: 20,
     speed: 10,
+    direcaoX: 1,
+    direcaoY: 1,
+    _calcPosicao: function(){
+        // criando colisão em cima e embaixo com base na posição da bola
+        if(this.x > campo.w - this.r - raqueteDireita.w - gapX){
+            //verifica colisão com raquete direita
+            if(this.y + this.r > raqueteDireita.y && this.y - this.r + raqueteDireita.h){
+                this. _reverteX()
+            } else {
+                // pontua no placar 
+                placar._pontuarHuman()
+                this._pointUp()
+            }
+        };
+        if(this.x < this.r + raqueteEsquerda.w + gapX){
+            // verifica colisão com raquete esquerda 
+            if(this.y + this.r > raqueteEsquerda.y && this.y < raqueteEsquerda.y + raqueteEsquerda.h){
+                this._reverteX()
+            } else {
+                // pontua no placar
+                placar._pontuarComputer()
+                this._pointUp()
+            }
+        }
+        //verifica se a bola esta colidindo
+        if((this.y - this.r < 0 && this.direcaoY < 0) || (this.y > campo.h - this.r && this.direcaoY > 0)){
+            this._reverteY()
+        };  
+    },
+    _reverteX: function(){
+        //reverte direção da bola
+        this.direcaoX *= -1 
+    },
+    _reverteY: function(){
+        // reverte a direção da bola
+        this.direcaoY *= -1
+    },
+    _pointUp: function(){
+        this.x = campo.w / 2
+        this.h = campo.h / 2
+    },
     _move: function() { 
         // criando animação da bola 
-        this.x += 1 * this.speed
-        this.y += 1 * this.speed
+        this.x += this.direcaoX * this.speed
+        this.y += this.direcaoY * this.speed
     },
     draw: function(){
         // desenhando a bola
@@ -94,6 +141,7 @@ const bola = {
         canvasCtx.beginPath();
         canvasCtx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false);
         canvasCtx.fill();
+        this._calcPosicao()
         this._move()
     }
 };
